@@ -1,5 +1,6 @@
 package com.abel.quartz.config;
 
+import com.fasterxml.jackson.databind.util.JSONPObject;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.context.ApplicationContext;
@@ -27,6 +28,7 @@ public class InvokingJobDetailFactory extends QuartzJobBean {
     @Override
     protected void executeInternal(JobExecutionContext context) throws JobExecutionException {
         try {
+            System.out.println("----------------jobtask------------:"+ context);
             Object obj = ctx.getBean(targetObject);
             Method m = null;
             try {

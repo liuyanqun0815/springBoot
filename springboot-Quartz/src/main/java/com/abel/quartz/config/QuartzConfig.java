@@ -9,6 +9,7 @@ import java.util.Properties;
 import com.zaxxer.hikari.HikariDataSource;
 import org.quartz.Job;
 import org.quartz.JobDetail;
+import org.quartz.Scheduler;
 import org.quartz.Trigger;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,6 +18,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.quartz.CronTriggerFactoryBean;
 import org.springframework.scheduling.quartz.JobDetailFactoryBean;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
+import org.springframework.stereotype.Service;
+
+import javax.annotation.Resource;
 
 /**
  * Created by yangyibo on 2019/1/16.
@@ -148,7 +152,7 @@ public class QuartzConfig {
      * @throws PropertyVetoException
      */
     @Bean
-    public SchedulerFactoryBean schedulerFactoryBean(@Qualifier("executeJobTrigger") Trigger executeJobTrigger) throws IOException, PropertyVetoException {
+    public SchedulerFactoryBean schedulerFactoryBean(@Qualifier("executeJobTrigger") Trigger executeJobTrigger ) throws IOException, PropertyVetoException {
         SchedulerFactoryBean factory = new SchedulerFactoryBean();
         // this allows to update triggers in DB when updating settings in config file:
         //用于quartz集群,QuartzScheduler 启动时更新己存在的Job，这样就不用每次修改targetObject后删除qrtz_job_details表对应记录了
@@ -156,7 +160,7 @@ public class QuartzConfig {
         //用于quartz集群,加载quartz数据源
         //factory.setDataSource(dataSource);
         //QuartzScheduler 延时启动，应用启动完10秒后 QuartzScheduler 再启动
-        //factory.setStartupDelay(10);
+        factory.setStartupDelay(10);
         //用于quartz集群,加载quartz数据源配置
         factory.setAutoStartup(true);
         factory.setQuartzProperties(quartzProperties());
@@ -165,7 +169,7 @@ public class QuartzConfig {
         //注册触发器
         Trigger[] triggers = {executeJobTrigger};
         factory.setTriggers(triggers);
-
+//        factory.start();
         return factory;
     }
 
@@ -180,7 +184,7 @@ public class QuartzConfig {
     @Bean(name = "executeJobTrigger")
     public CronTriggerFactoryBean executeJobTrigger(@Qualifier("executeJobDetail") JobDetail jobDetail) {
         //每天凌晨3点执行
-        return cronTriggerFactoryBean(jobDetail, "0 1 0 * * ? ");
+        return cronTriggerFactoryBean(jobDetail, "0 /1 * * * ?");
     }
 
 
@@ -194,6 +198,7 @@ public class QuartzConfig {
      */
     @Bean
     public JobDetailFactoryBean executeJobDetail() {
+
         return createJobDetail(InvokingJobDetailFactory.class, GROUP_NAME, "executeJob");
     }
 

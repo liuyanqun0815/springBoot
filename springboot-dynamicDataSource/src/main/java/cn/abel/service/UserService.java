@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import cn.abel.config.DynamicDataSourceContextHolder;
+import cn.abel.dao.NewsDao;
 import cn.abel.enums.DatabaseTypeEnum;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,15 +16,20 @@ import cn.abel.bean.User;
 public class UserService {
     @Autowired
 	private UserDao userDao;
+    @Autowired
+	private NewsDao newsDao;
 	
 	public List<User> getByMap(Map<String,Object> map){
 		DynamicDataSourceContextHolder.setDatabaseType(DatabaseTypeEnum.USER);
+		userDao.getByMap(map);
+		System.out.println(newsDao.getByMap(map));
 		return userDao.getByMap(map);
 	}
 	
 	public User getById(Integer id){
 		DynamicDataSourceContextHolder.setDatabaseType(DatabaseTypeEnum.USER);
 		return userDao.getById(id);
+
 	}
 	
 	public User create(User user){

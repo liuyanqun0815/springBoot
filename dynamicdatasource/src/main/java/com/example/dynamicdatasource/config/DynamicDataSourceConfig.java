@@ -1,6 +1,8 @@
-package cn.abel.config;
+package com.example.dynamicdatasource.config;
 
-import cn.abel.enums.DatabaseTypeEnum;
+//import com.baomidou.mybatisplus.extension.spring.MybatisSqlSessionFactoryBean;
+import com.baomidou.mybatisplus.extension.spring.MybatisSqlSessionFactoryBean;
+import com.example.dynamicdatasource.enu.DataSourceTypeEnum;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.annotation.MapperScan;
@@ -21,7 +23,7 @@ import java.util.Map;
  * @time 2019/3/27
  */
 @Configuration
-@MapperScan(basePackages = "cn.abel.dao")
+@MapperScan(basePackages = "com.example.dynamicdatasource.dynamic.mapper")
 public class DynamicDataSourceConfig {
     @Value("${spring.datasource.primary.url}")
     private String primaryUrl;
@@ -61,8 +63,8 @@ public class DynamicDataSourceConfig {
     public DynamicDataSource dynamicDataSource(@Qualifier("primaryDataSource") DataSource primaryDataSource,
                                                @Qualifier("userDataSource") DataSource miaoMoreDataSource) {
         Map<Object, Object> targetDataSources = new HashMap<>();
-        targetDataSources.put(DatabaseTypeEnum.PRIMARY, primaryDataSource);
-        targetDataSources.put(DatabaseTypeEnum.USER, miaoMoreDataSource);
+        targetDataSources.put(DataSourceTypeEnum.PRIMARY, primaryDataSource);
+        targetDataSources.put(DataSourceTypeEnum.USER, miaoMoreDataSource);
 
         DynamicDataSource dataSource = new DynamicDataSource();
         dataSource.setTargetDataSources(targetDataSources);// 该方法是AbstractRoutingDataSource的方法
